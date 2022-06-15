@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import lombok.Getter;
-import ru.javarush.project2.zoo.model.TileItem;
+import ru.javarush.project2.zoo.model.ItemProperties;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -21,34 +21,32 @@ public class ZooProperties {
 
     public final static String VEGETATION_TYPE_NAME = "Растения";
 
-    private static ZooProperties INSTANCE;
-
-    private final static Properties LAND_PROPERTIES = new Properties();
+    private final Properties landProperties = new Properties();
 
     @Getter
-    private static Map<String, TileItem> itemsProps;
+    private Map<String, ItemProperties> itemsProps;
 
     /**
      * Chances to catch and eat food
      */
     @Getter
-    private static Map<String, Map<String, Integer>> eatChain = new HashMap<>();
+    private Map<String, Map<String, Integer>> eatChain = new HashMap<>();
 
     /**
      * Chances to be eaten by someone on same tile
      */
     @Getter
-    private static Map<String, Map<String, Integer>> eatenChain = new HashMap<>();
+    private Map<String, Map<String, Integer>> eatenChain = new HashMap<>();
 
     /**
      * Load land basic properties like size x, y, and vegetation growth speed
      */
-    {
+    private void initLandProperties () {
         Path path = Paths.get(Path.of("").toAbsolutePath().toString(),
                 "/src/main/resources/world/default/land.properties");
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(path.toFile())))){
-            LAND_PROPERTIES.load(reader);
+            landProperties.load(reader);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -57,28 +55,27 @@ public class ZooProperties {
     /**
      * Load flora and fauna common properties for type
      */
-    private static void initItemsProps() {
+    private void initItemsProps() {
         Path path = Paths.get(Path.of("").toAbsolutePath().toString(),
                 "/src/main/resources/world/default/creatures.yaml");
 
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
 
-        List<TileItem> items = new ArrayList<>();
+        List<ItemProperties> items = new ArrayList<>();
 
         try {
-            items = mapper.readValue(path.toFile(), new TypeReference<>() {
-            });
+            items = mapper.readValue(path.toFile(), new TypeReference<>() {});
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        itemsProps = items.stream().collect(Collectors.toMap(TileItem::getTypeName, Function.identity()));
+        itemsProps = items.stream().collect(Collectors.toMap(ItemProperties::getTypeName, Function.identity()));
     }
 
     /**
      * Load eat by properties
      */
-    private static void initEatTable() {
+    private void initEatTable() {
         Path path = Paths.get(Path.of("").toAbsolutePath().toString(),
                 "/src/main/resources/world/default/food_chain.csv");
 
@@ -115,7 +112,7 @@ public class ZooProperties {
     /**
      * Init eaten map, need for creatures to calculate danger before moving
      */
-    private static void initEatenTable() {
+    private void initEatenTable() {
         for(String creature : eatChain.keySet()){
             Map<String, Integer> eatenBy = new HashMap<>();
 
@@ -135,22 +132,15 @@ public class ZooProperties {
         }
     }
 
-    private ZooProperties() {
+    public ZooProperties() {
+        initLandProperties();
         initItemsProps();
         initEatTable();
         initEatenTable();
     }
 
-    public static ZooProperties getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new ZooProperties();
-        }
-
-        return INSTANCE;
-    }
-
-    public static String getProperty(String name) {
-        return LAND_PROPERTIES.getProperty(name);
+    public String getProperty(String name) {
+        return landProperties.getProperty(name);
     }
 
 }
