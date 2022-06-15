@@ -39,16 +39,24 @@ public abstract class TileItem {
      */
     private double weight;
 
+    /**
+     * Is it possible to do something with this item by it's own or other methods
+     * If isAlive = false, only removing is possible
+     */
+    private boolean isAlive;
+
     public TileItem(ItemProperties value) {
         value.getCounter().incrementAndGet();
         this.typeName = value.getTypeName();
         this.name = value.getTypeName() + "-" + value.getId();
         this.weight = value.getWeight();
         this.maxOnTileCount = value.getMaxOnTileCount();
+        this.isAlive = true;
     }
 
     public void die(Land land){
-        land.getIsland()[posY][posX].getTileItems().remove(this);
+        land.getIsland()[posY][posX].getTileItems().get(this.getTypeName()).remove(this);
+        isAlive = false;
     }
 
 }
