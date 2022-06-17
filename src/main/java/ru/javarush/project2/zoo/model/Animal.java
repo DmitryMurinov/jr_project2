@@ -1,5 +1,11 @@
 package ru.javarush.project2.zoo.model;
 
+import lombok.Data;
+import ru.javarush.project2.zoo.utils.ZooProperties;
+
+import java.util.Properties;
+
+@Data
 public class Animal extends TileItem {
 
     /**
@@ -17,11 +23,26 @@ public class Animal extends TileItem {
      */
     private double currentFood;
 
+    /**
+     * Actions status for current tick
+     */
+    private boolean eatAlready;
+
     public Animal(ItemProperties value) {
         this.maxTickMove = value.getMaxTickMove();
         this.maxFood = value.getMaxFood();
     }
 
-    
+    /**
+     * liveCircle of animal for 1 tick
+     */
+    @Override
+    public void liveTick(Land land, ZooProperties zooProperties){
+        lostWeight(land, zooProperties);
+        eat(land, zooProperties);
+    }
 
+    public void eat(Land land, ZooProperties zooProperties){}
+
+    public void lostWeight(Land land, ZooProperties zooProperties){}
 }

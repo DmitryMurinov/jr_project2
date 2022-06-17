@@ -3,6 +3,7 @@ package ru.javarush.project2.zoo.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.javarush.project2.zoo.utils.ZooProperties;
 
 @Data
 @NoArgsConstructor
@@ -54,9 +55,11 @@ public abstract class TileItem {
         this.isAlive = true;
     }
 
-    public void die(Land land){
+    public synchronized void die(Land land){
         land.getIsland()[posY][posX].getTileItems().get(this.getTypeName()).remove(this);
         isAlive = false;
     }
+
+    public void liveTick(Land land, ZooProperties zooProperties){};
 
 }
