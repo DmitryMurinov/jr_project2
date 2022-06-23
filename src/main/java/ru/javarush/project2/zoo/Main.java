@@ -7,16 +7,13 @@ import ru.javarush.project2.zoo.service.*;
 import ru.javarush.project2.zoo.util.Populate;
 import ru.javarush.project2.zoo.util.ZooProperties;
 
-import java.io.FileOutputStream;
-import java.io.PrintStream;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
 
 
-    public static void main(String[] args) throws UnsupportedEncodingException {
+    public static void main(String[] args) {
 
         ZooProperties zooProperties = new ZooProperties();
         Land land = new Land();
