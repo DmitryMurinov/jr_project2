@@ -26,24 +26,23 @@ public class Populate {
 
         createLand();
 
-        for(Map.Entry<String, ItemProperties> entry : zooProperties.getItemsProps().entrySet()){
-            if(ZooProperties.VEGETATION_TYPE_NAME.equals(entry.getKey())){
+        for (Map.Entry<String, ItemProperties> entry : zooProperties.getItemsProps().entrySet()) {
+            if (ZooProperties.VEGETATION_TYPE_NAME.equals(entry.getKey())) {
                 plantVegetation(entry);
                 continue;
             }
 
             String typeName = entry.getValue().getTypeName();
 
-            //If creature can eat vegetation, it's a herbivorous creature
-            if(zooProperties.getEatChain().get(typeName).containsKey(ZooProperties.VEGETATION_TYPE_NAME)){
+            //If creature can eat only vegetation, it's a herbivorous creature
+            if (zooProperties.getEatChain().get(typeName).containsKey(ZooProperties.VEGETATION_TYPE_NAME) &&
+                    zooProperties.getEatenChain().size() == 1) {
                 createHerbivorous(entry);
                 continue;
             }
 
-            //If creature can't eat vegetation, it's a carnivorous creature
-            if(!zooProperties.getEatChain().get(typeName).containsKey(ZooProperties.VEGETATION_TYPE_NAME)){
-                createCarnivorous(entry);
-            }
+            //If creature can eat other creature or other creatures and vegetation, it's a carnivorous creature
+            createCarnivorous(entry);
         }
     }
 
@@ -55,7 +54,7 @@ public class Populate {
                 LandTile landTile = new LandTile();
 
                 Set<String> names = zooProperties.getItemsProps().keySet();
-                for(String name : names){
+                for (String name : names) {
                     landTile.getTileItems().put(name, new CopyOnWriteArrayList<>());
                 }
 
@@ -72,14 +71,14 @@ public class Populate {
             Carnivorous carnivorous = new Carnivorous(entry.getValue());
 
             int xPosition = java.util.concurrent.ThreadLocalRandom.current().nextInt(0, landSizeX);
-            int yPosition =  java.util.concurrent.ThreadLocalRandom.current().nextInt(0, landSizeY);
+            int yPosition = java.util.concurrent.ThreadLocalRandom.current().nextInt(0, landSizeY);
 
             boolean preyOnTile = checkPrey(entry, xPosition, yPosition);
 
             int attemptsToFindTileWithoutPrey = 10;
-            while (preyOnTile && attemptsToFindTileWithoutPrey > 0){
+            while (preyOnTile && attemptsToFindTileWithoutPrey > 0) {
                 xPosition = java.util.concurrent.ThreadLocalRandom.current().nextInt(0, landSizeX);
-                yPosition =  java.util.concurrent.ThreadLocalRandom.current().nextInt(0, landSizeY);
+                yPosition = java.util.concurrent.ThreadLocalRandom.current().nextInt(0, landSizeY);
 
                 preyOnTile = checkPrey(entry, xPosition, yPosition);
                 attemptsToFindTileWithoutPrey--;
@@ -95,18 +94,18 @@ public class Populate {
     private boolean checkPrey(Map.Entry<String, ItemProperties> entry, int xPosition, int yPosition) {
         Map<String, List<TileItem>> tileItems = land.getIsland()[yPosition][xPosition].getTileItems();
 
-        for(Map.Entry<String, List<TileItem>> tileTypeItems : tileItems.entrySet()){
-            if(tileTypeItems.getKey().equals(ZooProperties.VEGETATION_TYPE_NAME)){
+        for (Map.Entry<String, List<TileItem>> tileTypeItems : tileItems.entrySet()) {
+            if (tileTypeItems.getKey().equals(ZooProperties.VEGETATION_TYPE_NAME)) {
                 continue;
             }
 
-            if(tileTypeItems.getValue().size() == 0){
+            if (tileTypeItems.getValue().size() == 0) {
                 continue;
             }
 
             //if item on tile can be eaten by carnivorous we are trying to create, there are prey on this tile
-            if(zooProperties.getEatenChain().get(tileTypeItems.getKey()) != null &&
-                    zooProperties.getEatenChain().get(tileTypeItems.getKey()).containsKey(entry.getKey())){
+            if (zooProperties.getEatenChain().get(tileTypeItems.getKey()) != null &&
+                    zooProperties.getEatenChain().get(tileTypeItems.getKey()).containsKey(entry.getKey())) {
                 return true;
             }
         }
@@ -119,7 +118,7 @@ public class Populate {
             Herbivorous herbivorous = new Herbivorous(entry.getValue());
 
             int xPosition = java.util.concurrent.ThreadLocalRandom.current().nextInt(0, landSizeX);
-            int yPosition =  java.util.concurrent.ThreadLocalRandom.current().nextInt(0, landSizeY);
+            int yPosition = java.util.concurrent.ThreadLocalRandom.current().nextInt(0, landSizeY);
 
             herbivorous.setPosX(xPosition);
             herbivorous.setPosY(yPosition);
@@ -133,7 +132,7 @@ public class Populate {
             Plant plant = new Plant(entry.getValue());
 
             int xPosition = java.util.concurrent.ThreadLocalRandom.current().nextInt(0, landSizeX);
-            int yPosition =  java.util.concurrent.ThreadLocalRandom.current().nextInt(0, landSizeY);
+            int yPosition = java.util.concurrent.ThreadLocalRandom.current().nextInt(0, landSizeY);
 
             land.getIsland()[yPosition][xPosition].getTileItems().get(entry.getKey()).add(plant);
         }
