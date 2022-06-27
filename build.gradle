@@ -1,0 +1,35 @@
+plugins {
+    id 'java'
+}
+
+sourceCompatibility = 1.16
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+group 'org.example'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+//    Lombok
+    compileOnly 'org.projectlombok:lombok:1.18.24'
+    annotationProcessor 'org.projectlombok:lombok:1.18.24'
+
+//    Jackson libraries set
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.13.3'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.3'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.3'
+    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.13.3'
+    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.13.3'
+    implementation 'org.yaml:snakeyaml:1.30'
+
+//    Logging
+    implementation 'org.slf4j:slf4j-api:1.7.36'
+    testImplementation 'ch.qos.logback:logback-classic:1.2.11'
+}
+
+test {
+    useJUnitPlatform()
+}
