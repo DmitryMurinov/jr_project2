@@ -50,6 +50,8 @@ public class Statistics implements AnimateLand{
             }
         }
 
+        stringBuffer.append("\r\n\r\n\r\n");
+
         System.out.println(stringBuffer.toString());
     }
 

@@ -28,10 +28,6 @@ public class PhasersHandler {
         while(zooTtl > 0) {
             phaser.arriveAndAwaitAdvance();
             zooTtl--;
-
-            if(zooTtl % 10 == 0){
-                System.out.println("123");
-            }
         }
 
         phaser.arriveAndDeregister();
